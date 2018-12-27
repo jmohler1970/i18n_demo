@@ -1,0 +1,8 @@
+{
+    "dependencies":{
+        "i18n":"git://github.com/jmohler1970/i18n.git"
+    },
+    "installPaths":{
+        "i18n":"i18n"
+    }
+}
