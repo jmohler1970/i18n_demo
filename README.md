@@ -41,4 +41,7 @@ We also have a `.properties` which imports data in `ini` format. No one has aske
 # Back to coding
 
 
+# Resources
+
+- http://get-simple.info/extend/
 

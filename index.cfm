@@ -39,14 +39,132 @@ THE SOFTWARE.
 <body>
 
 <cfscript>
+	totalSize = 0;
 
-variables.i18n = new i18n.i18n();
+	param form.lang = cgi.HTTP_ACCEPT_LANGUAGE;
+	param form.key = "EMAIL_ERROR";
 
-variables.i18n.setupRequest();
+	variables.i18n = new i18n.i18n();
+	variables.i18n.setupApplication();
 
-writeoutput(variables.i18n.geti18n("USERNAME_ERROR"));
+	arLang = variables.i18n.getLang();
 </cfscript>
 
+	<section class="hero is-info">
+		<div class="hero-body">
+			<div class="container">
+				<h1 class="title">
+					ColdFusion reader of PHP i18n language files
+				</h1>
+				<h2 class="subtitle">
+					By James Mohler
+				</h2>
+			</div>
+		</div>
+	</section>
+
+
+<section class="section">
+	<div class="container">
+
+<form action="?" method="post">
+
+	<cfoutput>
+
+		<label class="label">Language</label>
+		<div class="select">
+			<select name="lang">
+				<option value="#cgi.HTTP_ACCEPT_LANGUAGE#" <cfif cgi.HTTP_ACCEPT_LANGUAGE EQ form.lang>selected</cfif>>Browser default (#cgi.HTTP_ACCEPT_LANGUAGE#)</option>
+				<cfloop array="#arLang#" item="item">
+					<option value="#item#" <cfif item EQ form.lang>selected</cfif>>#item#</option> 
+				</cfloop>
+			</select>
+		</div>
+
+		<div class="field">
+			<div class="control">
+				<label class="label">Key</label>
+				<input type="text" class="input" name="key" list="keys" value="#EncodeForHTMLAttribute(form.key)#" />
+
+				<datalist id="keys">
+					<option value="WEBSITENAME_ERROR">
+					<option value="EMAIL_ERROR">
+					<option value="DELETE_FILE">
+					<option value="SITEMAP_CREATED">
+					<option value="OR_GREATER_REQ">
+				</datalist>
+			</div>
+		</div>
+	</cfoutput>
+
+	<div class="field">
+		<div class="control">
+			<button type="submit" class="button is-primary">Submit</button>
+		</div>
+	</div>
+
+</form>
+
+<p>&nbsp;</p>
+
+<div class="notification is-info is-size-4">
+	<cfoutput>#variables.i18n.geti18n(form.key, [], form.lang)#</cfoutput>
+</div>
+
+
+<h1 class="is-size-2">Cache Status</h1>
+
+
+<table class="table is-striped">
+<thead>
+<tr>
+	<th>Cacheid</th>
+	<th style="text-align : center;">Created Time</th>
+	<th style="text-align : center;">Last Updated</th>
+	<th style="text-align : center;">Last Hit</th>
+	<th style="text-align : right;">Hit Count</th>
+	<th style="text-align : right;">Hit Count %</th>
+	<th style="text-align : right;">Size (KB)</th>
+</tr>
+</thead>
+
+<cfoutput>
+	<cfloop index="metadata" array="#variables.i18n.getCacheIDs()#">
+
+		<cfset totalSize += metadata.size>
+			
+		<tr>
+			<td><code>#metadata.lang#</code></td>
+			<td style="text-align : center;">#LSTimeFormat(metadata.createdTime, "h:mm:ss")#</td>
+			<td style="text-align : center;">#LSTimeFormat(metadata.lastupdated, "h:mm:ss")#</td>
+			<td style="text-align : center;">#LSTimeFormat(metadata.lastHit, "h:mm:ss")#</td>
+			<td style="text-align : right;">#metadata.hitcount#</td>
+			<td style="text-align : right;">
+				<cfif metadata.cache_hitcount GT 0>
+					<cfset percent_of_hits = 100.0 * metadata.hitcount / metadata.cache_hitcount>
+					#LSNumberFormat(percent_of_hits, '999.9')# %
+				</cfif>
+			</td>
+			<td style="text-align : right;">#LSNumberFormat(metadata.size \ 1024)#</td>
+		</tr>
+	</cfloop>
+</cfoutput>
+<tfoot>
+	<tr>
+		<th></th>
+		<th></th>
+		<th></th>
+		<th></th>
+		<th></th>
+		<th></th>
+		<th style="text-align : right;"><cfoutput>#LSNumberFormat(totalSize \ 1024)#</cfoutput></th>
+	</tr>	
+</tfoot>	
+</table>
+
+
+	</div>
+</section>
 
 
 </body>

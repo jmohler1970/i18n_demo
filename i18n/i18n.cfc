@@ -1,20 +1,32 @@
-component {
+component output="false" {
 
 
 variables.langRoot = expandPath("./lang");
 variables.arLang = []; // Names of all the current languages
 variables.cache = {language : "i18n_lang"}
 
-array function getLang()	{
+array function getLang() output="false"	{
 	return variables.arLang;
 	}
 
-void function setupRequest()	{
+array function getCacheIDs() output="false"	{
+	var AllIDs = cacheGetAllIds(variables.cache.language);
 
+
+	AllIDs.each(function(ID, index, AllIDs){
+		AllIDs[index] = cacheGetMetadata(ID, "template", variables.cache.language);
+		AllIDs[index].lang = ID;
+	});
+
+	return AllIDs;
+}
+
+
+void function setupApplication() output="false"	{
 
 	if(variables.arLang.isEmpty())	{
 		for(var langFile in DirectoryList(variables.langRoot, false, "path", "*.php"))	{
-			variables.arLang.append(langFile.listLast("/").listLast("\").listFirst("."));
+			variables.arLang.append(langFile.listLast("/").listLast("\").listFirst(".").replaceList("_", "-"));
 			}
 		}
 
@@ -35,9 +47,23 @@ void function setupRequest()	{
 }
 
 
+
 string function geti18n(required string key, any placeholder = [], string lang = "en-US") {
 
+
 	// lang could be powered by cgi.HTTP_ACCEPT_LANGUAGE
+	var final_lang = "";
+	for (var accept_lang in ListToArray(arguments.lang))	{
+		if (ArrayContainsNoCase(variables.arLang, accept_lang.listfirst(";")))	{
+			final_lang = accept_lang.listfirst(";");
+			break;
+		}
+	}
+
+	if (final_lang == "")	{
+		return "Error in processing: " & final_lang;
+	}
+
 
 	arguments.lang = arguments.lang.listfirst();
 
@@ -49,11 +75,9 @@ string function geti18n(required string key, any placeholder = [], string lang =
 	if (CacheIdExists(arguments.lang, variables.cache.language))	{
 
 		var stLang = cacheGet(arguments.lang, variables.cache.language);
-
-
 		if (stLang.keyExists(arguments.key))	{
 
-			myString = stLang[arguments.key];
+			var myString = stLang[arguments.key];
 
 			for (var i in arguments.placeholder)	{
 
@@ -63,6 +87,7 @@ string function geti18n(required string key, any placeholder = [], string lang =
 			return getSafeHTML(myString);
 			} // end keyExists
 		} // end cacheIdExists
+
 
 	return "{#arguments.key#}"; // This is string, it is not intended to be valid JSON
 }
@@ -105,10 +130,12 @@ private struct function readPHP(required string phpPath)	{
 
 		phpText = fileRead(phpFile).trim();
 
+
 		// remove comments and blank lines
 		phpText = phpText.ReReplace("(?m)\##.*?$", "", "all")
 					.ReReplace("[#Chr(10)#]{2,}", chr(10), "all")
 					.ReplaceList('",', '"');
+
 
 		// loop over each line, ignore comments (#...) and insert keys/values into return struct
 		for(var line in phpText.ListToArray(chr(10)))	{
@@ -134,11 +161,13 @@ private struct function readPHP(required string phpPath)	{
 					if (value.right(1) == ",")
 						value = value.mid(1, value.len() - 1);
 
+
 					if (value.right(1) == "'")
 						value = value.mid(1, value.len() - 1);
 
 					if (value.left(1) == "'")
 						value = value.mid(2, 1000);
+
 
 					stProperties[languageKey][key] = value;
 				} // valid split at
@@ -152,7 +181,7 @@ private struct function readPHP(required string phpPath)	{
 
 	return stProperties;
 
-} // end funciton
+} // end function
 
 
 
