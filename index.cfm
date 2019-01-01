@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 
 <!DOCTYPE html>
-<html>
+<html></html>
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -45,7 +45,7 @@ THE SOFTWARE.
 	param form.key = "EMAIL_ERROR";
 
 	variables.i18n = new i18n.i18n();
-	variables.i18n.setupApplication();
+	variables.i18n.setupRequest();
 
 	arLang = variables.i18n.getLang();
 </cfscript>
@@ -76,7 +76,7 @@ THE SOFTWARE.
 			<select name="lang">
 				<option value="#cgi.HTTP_ACCEPT_LANGUAGE#" <cfif cgi.HTTP_ACCEPT_LANGUAGE EQ form.lang>selected</cfif>>Browser default (#cgi.HTTP_ACCEPT_LANGUAGE#)</option>
 				<cfloop array="#arLang#" item="item">
-					<option value="#item#" <cfif item EQ form.lang>selected</cfif>>#item#</option> 
+					<option value="#item.lang#" <cfif item.lang EQ form.lang>selected</cfif>>#item.lang#</option> 
 				</cfloop>
 			</select>
 		</div>
@@ -129,7 +129,7 @@ THE SOFTWARE.
 </thead>
 
 <cfoutput>
-	<cfloop index="metadata" array="#variables.i18n.getCacheIDs()#">
+	<cfloop index="metadata" array="#arLang#">
 
 		<cfset totalSize += metadata.size>
 			
