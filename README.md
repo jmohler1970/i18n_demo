@@ -49,7 +49,27 @@ There are a couple of reasons which may or may not be applicable in your environ
 
 There may be other reasons too.
 
+# `cgi.http_accept_language`
+
+`cgi.http_accept_language` is a variable that needs attention today. It is a comma separated list of all the languages that you have identified that you want. Languages in general are language dash country. Just because a language is spoken one way in one country, does not mean it isn't different some where else. This also gets into how numbers, date, and currency are formatted.
+
+Your web browser has list of the languages that it would like a response to be. There is no requirement that a page or a web service actually returns a particular language. Let's look where this is set. In Chrome, if you go to 
+- settings
+- advanced settings
+- languages
+
+You should have something in there. I am adding a few variation of Spanish. If we go back to the web page, we can see that it changed.
+
+## Now that we have this string
+
+Now that we have this string, what do we do with it. On lines 45 to 57, I am going to see if I have a language that the browser wants. If not I am going to return an error message. There are other approaches. Maybe you code will just return a designated language. Perhaps Esperanto written in the Greek alphabet would be a better solution.
+
+
+
 # Code Review.
+
+Let's get into the main part of the code review.
+
 
 ## Lang file
 
@@ -122,3 +142,5 @@ I have some debug below to show how much the cache is getting used.
 
 - http://get-simple.info/extend/
 - https://helpx.adobe.com/coldfusion/cfml-reference/coldfusion-functions/functions-c-d/CachePut.html
+
+- Yet another way to do this: https://stackoverflow.com/questions/54357098/how-to-use-org-apache-commons-configuration-with-coldfusion
