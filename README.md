@@ -140,6 +140,8 @@ I have some debug below to show how much the cache is getting used.
 
 # Resources
 
+- https://github.com/jmohler1970/i18n_demo
+- https://github.com/jmohler1970/i18n
 - http://get-simple.info/extend/
 - https://helpx.adobe.com/coldfusion/cfml-reference/coldfusion-functions/functions-c-d/CachePut.html
 
